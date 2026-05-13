@@ -15,6 +15,9 @@ RUN git clone https://github.com/cowrie/cowrie.git /cowrie
 
 WORKDIR /cowrie
 
+# -------------------------
+# Install dependencies
+# -------------------------
 RUN python3 -m venv cowrie-env
 
 RUN /bin/bash -c "\
@@ -34,11 +37,11 @@ ENV PORT=8080
 EXPOSE 8080 2222
 
 # -------------------------
-# FINAL FIX (NO twistd, NO bin/cowrie)
+# FINAL FIX (CORRECT ENTRYPOINT)
 # -------------------------
 CMD bash -c "\
 source /cowrie/cowrie-env/bin/activate && \
 cd /cowrie && \
-python bin/cowrie start & \
+twistd -n -y etc/cowrie.tac & \
 cd /app && \
 python app.py"
