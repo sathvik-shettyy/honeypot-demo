@@ -40,11 +40,4 @@ EXPOSE 8080 2222
 # -------------------------
 # FINAL FIX (AUTO-DETECT .tac FILE)
 # -------------------------
-CMD bash -c "\
-source /cowrie/cowrie-env/bin/activate && \
-cd /cowrie && \
-twistd -n -y cowrie/twisted/cowrie.tac & \
-cd /app && \
-python app.py"
-cd /app && \
-python app.py"
+CMD bash -c "cd /cowrie && source cowrie-env/bin/activate && twistd -n -y cowrie/twisted/cowrie.tac & cd /app && python app.py"
