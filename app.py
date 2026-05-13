@@ -6,25 +6,41 @@ app = Flask(__name__)
 
 LOG_FILE = "/cowrie/var/log/cowrie/cowrie.json"
 
+
 @app.route("/")
 def home():
-    return {"status": "Honeypot Active", "service": "Cowrie SSH Decoy"}
+    return {
+        "status": "active",
+        "service": "honeypot-demo",
+        "message": "Honeypot API running"
+    }
+
 
 @app.route("/logs")
 def logs():
-    logs = []
+    events = []
 
     if not os.path.exists(LOG_FILE):
-        return jsonify({"message": "No logs yet - waiting for attackers"})
+        return jsonify({
+            "status": "no_logs",
+            "message": "Cowrie logs not found yet"
+        })
 
-    with open(LOG_FILE, "r") as f:
-        for line in f.readlines()[-100:]:
-            try:
-                logs.append(json.loads(line))
-            except:
-                continue
+    try:
+        with open(LOG_FILE, "r") as f:
+            for line in f.readlines()[-100:]:
+                try:
+                    events.append(json.loads(line))
+                except:
+                    continue
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
-    return jsonify(logs)
+    return jsonify({
+        "count": len(events),
+        "events": events
+    })
+
 
 @app.route("/ui")
 def ui():
@@ -36,8 +52,31 @@ def stats():
     if not os.path.exists(LOG_FILE):
         return {"total_events": 0}
 
-    count = sum(1 for _ in open(LOG_FILE))
-    return {"total_events": count}
+    try:
+        with open(LOG_FILE, "r") as f:
+            count = sum(1 for _ in f)
+        return {"total_events": count}
+    except:
+        return {"total_events": 0}
+
+
+@app.route("/debug")
+def debug():
+    log_path = "/cowrie/var/log/cowrie"
+    files = {}
+
+    if os.path.exists(log_path):
+        for root, _, filenames in os.walk(log_path):
+            for file in filenames:
+                try:
+                    path = os.path.join(root, file)
+                    with open(path, "r") as f:
+                        files[file] = f.read()[-2000:]
+                except:
+                    files[file] = "unable to read"
+
+    return jsonify(files)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
