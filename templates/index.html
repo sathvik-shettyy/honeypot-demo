@@ -1,1 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Honeypot Dashboard</title>
+</head>
+<body>
+    <h2>Recent Attacks</h2>
+    <button onclick="loadLogs()">Refresh</button>
+    <pre id="logs"></pre>
 
+    <script>
+        async function loadLogs() {
+            const res = await fetch('/logs');
+            const data = await res.json();
+            document.getElementById('logs').innerText = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>
