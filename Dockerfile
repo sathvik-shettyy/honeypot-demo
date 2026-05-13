@@ -43,8 +43,8 @@ EXPOSE 8080 2222
 CMD bash -c "\
 source /cowrie/cowrie-env/bin/activate && \
 cd /cowrie && \
-TAC_FILE=$(find . -name cowrie.tac | head -n 1) && \
-echo 'Using TAC file:' $TAC_FILE && \
-twistd -n -y $TAC_FILE & \
+twistd -n -y cowrie/twisted/cowrie.tac & \
+cd /app && \
+python app.py"
 cd /app && \
 python app.py"
