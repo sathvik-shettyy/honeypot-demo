@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     libssl-dev \
     libffi-dev \
+    findutils \
     && rm -rf /var/lib/apt/lists/*
 
 # -------------------------
@@ -16,7 +17,7 @@ RUN git clone https://github.com/cowrie/cowrie.git /cowrie
 WORKDIR /cowrie
 
 # -------------------------
-# Install dependencies
+# Install Cowrie dependencies
 # -------------------------
 RUN python3 -m venv cowrie-env
 
@@ -37,11 +38,13 @@ ENV PORT=8080
 EXPOSE 8080 2222
 
 # -------------------------
-# FINAL FIX (CORRECT ENTRYPOINT)
+# FINAL FIX (AUTO-DETECT .tac FILE)
 # -------------------------
 CMD bash -c "\
 source /cowrie/cowrie-env/bin/activate && \
 cd /cowrie && \
-twistd -n -y etc/cowrie.tac & \
+TAC_FILE=$(find . -name cowrie.tac | head -n 1) && \
+echo 'Using TAC file:' $TAC_FILE && \
+twistd -n -y $TAC_FILE & \
 cd /app && \
 python app.py"
