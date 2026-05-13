@@ -3,23 +3,59 @@
 <head>
     <title>Honeypot Security Dashboard</title>
     <style>
-        body { font-family: Arial; margin: 20px; background: #0f172a; color: white; }
-        button { padding: 10px; margin-bottom: 10px; }
-        pre { background: #111827; padding: 15px; overflow: auto; }
+        body {
+            font-family: Arial;
+            background: #0b1220;
+            color: #ffffff;
+            margin: 20px;
+        }
+
+        button {
+            padding: 10px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        pre {
+            background: #111827;
+            padding: 15px;
+            overflow: auto;
+            border-radius: 8px;
+        }
+
+        .card {
+            background: #1f2937;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+        }
     </style>
 </head>
+
 <body>
 
-<h2>🛡️ SSH Honeypot Monitoring Console</h2>
+<h2>🛡️ Honeypot Security Dashboard</h2>
 
-<button onclick="loadLogs()">Refresh Logs</button>
-<button onclick="loadStats()">Stats</button>
+<div class="card">
+    <button onclick="loadLogs()">Load Logs</button>
+    <button onclick="loadStats()">Stats</button>
+    <button onclick="loadDebug()">Debug</button>
+</div>
 
-<h3>Stats</h3>
-<div id="stats"></div>
+<div class="card">
+    <h3>Stats</h3>
+    <pre id="stats">Not loaded</pre>
+</div>
 
-<h3>Recent Attacks</h3>
-<pre id="logs">Click refresh to load logs</pre>
+<div class="card">
+    <h3>Logs</h3>
+    <pre id="logs">Click "Load Logs"</pre>
+</div>
+
+<div class="card">
+    <h3>Debug</h3>
+    <pre id="debug">Click "Debug"</pre>
+</div>
 
 <script>
 async function loadLogs() {
@@ -33,6 +69,13 @@ async function loadStats() {
     const res = await fetch('/stats');
     const data = await res.json();
     document.getElementById('stats').innerText =
+        JSON.stringify(data, null, 2);
+}
+
+async function loadDebug() {
+    const res = await fetch('/debug');
+    const data = await res.json();
+    document.getElementById('debug').innerText =
         JSON.stringify(data, null, 2);
 }
 </script>
