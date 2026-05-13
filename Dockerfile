@@ -23,7 +23,8 @@ RUN python3 -m venv cowrie-env
 RUN /bin/bash -c "\
     source cowrie-env/bin/activate && \
     pip install --upgrade pip && \
-    pip install -r requirements.txt"
+    pip install -r requirements.txt && \
+    pip install twisted"
 
 # -------------------------
 # Flask App
@@ -37,11 +38,11 @@ ENV PORT=8080
 EXPOSE 8080 2222
 
 # -------------------------
-# FINAL FIX (USE OFFICIAL LAUNCHER)
+# FINAL STABLE START
 # -------------------------
 CMD bash -c "\
 source /cowrie/cowrie-env/bin/activate && \
 cd /cowrie && \
-bin/cowrie start & \
+python -m cowrie & \
 cd /app && \
 python app.py"
