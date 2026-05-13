@@ -6,7 +6,6 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     libssl-dev \
     libffi-dev \
-    findutils \
     && rm -rf /var/lib/apt/lists/*
 
 # -------------------------
@@ -17,7 +16,7 @@ RUN git clone https://github.com/cowrie/cowrie.git /cowrie
 WORKDIR /cowrie
 
 # -------------------------
-# Install Cowrie dependencies
+# Install dependencies
 # -------------------------
 RUN python3 -m venv cowrie-env
 
@@ -38,6 +37,11 @@ ENV PORT=8080
 EXPOSE 8080 2222
 
 # -------------------------
-# FINAL FIX (AUTO-DETECT .tac FILE)
+# FINAL FIX (USE OFFICIAL LAUNCHER)
 # -------------------------
-CMD bash -c "cd /cowrie && source cowrie-env/bin/activate && twistd -n -y cowrie/twisted/cowrie.tac & cd /app && python app.py"
+CMD bash -c "\
+source /cowrie/cowrie-env/bin/activate && \
+cd /cowrie && \
+bin/cowrie start & \
+cd /app && \
+python app.py"
