@@ -15,19 +15,15 @@ RUN git clone https://github.com/cowrie/cowrie.git /cowrie
 
 WORKDIR /cowrie
 
-# -------------------------
-# Setup venv + install dependencies
-# -------------------------
 RUN python3 -m venv cowrie-env
 
 RUN /bin/bash -c "\
     source cowrie-env/bin/activate && \
     pip install --upgrade pip && \
-    pip install twisted && \
     pip install -r requirements.txt"
 
 # -------------------------
-# Flask app
+# Flask App
 # -------------------------
 WORKDIR /app
 COPY . /app
@@ -38,11 +34,11 @@ ENV PORT=8080
 EXPOSE 8080 2222
 
 # -------------------------
-# FINAL FIXED START COMMAND
+# FINAL FIX (NO twistd, NO bin/cowrie)
 # -------------------------
 CMD bash -c "\
 source /cowrie/cowrie-env/bin/activate && \
 cd /cowrie && \
-twistd -n cowrie & \
+python bin/cowrie start & \
 cd /app && \
 python app.py"
