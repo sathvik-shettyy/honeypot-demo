@@ -1,49 +1,53 @@
 FROM python:3.11-slim
 
-# System dependencies
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
-    python3-venv \
     libssl-dev \
     libffi-dev \
+    python3-venv \
     && rm -rf /var/lib/apt/lists/*
 
-# ------------------------
-# Install Cowrie
-# ------------------------
+# -------------------------
+# Install Cowrie PROPERLY
+# -------------------------
 RUN git clone https://github.com/cowrie/cowrie.git /cowrie
 
 WORKDIR /cowrie
 
-RUN python3 -m venv cowrie-env && \
-    . cowrie-env/bin/activate && \
+RUN python3 -m venv cowrie-env
+
+RUN /bin/bash -c "\
+    source cowrie-env/bin/activate && \
     pip install --upgrade pip && \
+    pip install wheel && \
     pip install -r requirements.txt && \
-    pip install twisted
+    pip install twisted && \
+    python -m cowrie --help || true"
 
-# Optional safety: ensure permissions
-RUN chmod -R 755 /cowrie
+# IMPORTANT: run official installer
+RUN /bin/bash -c "\
+    source cowrie-env/bin/activate && \
+    pip install ."
 
-# ------------------------
-# Flask App Setup
-# ------------------------
+# -------------------------
+# Flask App
+# -------------------------
 WORKDIR /app
 COPY . /app
 
 RUN pip install flask
 
-# Railway port
 ENV PORT=8080
 
 EXPOSE 8080 2222
 
-# ------------------------
-# FIXED START COMMAND (IMPORTANT PART)
-# ------------------------
+# -------------------------
+# FINAL START COMMAND (FIXED)
+# -------------------------
 CMD bash -c "\
-. /cowrie/cowrie-env/bin/activate && \
+source /cowrie/cowrie-env/bin/activate && \
 cd /cowrie && \
-twistd -n cowrie & \
+bin/cowrie start && \
 cd /app && \
 python app.py"
