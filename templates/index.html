@@ -1,19 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Honeypot Dashboard</title>
+    <title>Honeypot Security Dashboard</title>
+    <style>
+        body { font-family: Arial; margin: 20px; background: #0f172a; color: white; }
+        button { padding: 10px; margin-bottom: 10px; }
+        pre { background: #111827; padding: 15px; overflow: auto; }
+    </style>
 </head>
 <body>
-    <h2>Recent Attacks</h2>
-    <button onclick="loadLogs()">Refresh</button>
-    <pre id="logs"></pre>
 
-    <script>
-        async function loadLogs() {
-            const res = await fetch('/logs');
-            const data = await res.json();
-            document.getElementById('logs').innerText = JSON.stringify(data, null, 2);
-        }
-    </script>
+<h2>🛡️ SSH Honeypot Monitoring Console</h2>
+
+<button onclick="loadLogs()">Refresh Logs</button>
+<button onclick="loadStats()">Stats</button>
+
+<h3>Stats</h3>
+<div id="stats"></div>
+
+<h3>Recent Attacks</h3>
+<pre id="logs">Click refresh to load logs</pre>
+
+<script>
+async function loadLogs() {
+    const res = await fetch('/logs');
+    const data = await res.json();
+    document.getElementById('logs').innerText =
+        JSON.stringify(data, null, 2);
+}
+
+async function loadStats() {
+    const res = await fetch('/stats');
+    const data = await res.json();
+    document.getElementById('stats').innerText =
+        JSON.stringify(data, null, 2);
+}
+</script>
+
 </body>
 </html>
